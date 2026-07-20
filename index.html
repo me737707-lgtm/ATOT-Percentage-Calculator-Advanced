@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ATOT Percentage Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      --navy-primary: #0B2249;
+      --navy-primary-light: #1A3A6B;
+      --navy-surface: #F0F4F9;
+      --navy-surface-variant: #D8E0EC;
+      --navy-on-surface: #0B2249;
+      --navy-on-surface-variant: #4A5D7A;
+      --navy-outline: #8A9BB5;
+      --navy-error: #B3261E;
+      --navy-container: #D6E4F7;
+      --navy-elevation-1: 0px 1px 3px 1px rgba(11,34,73,0.12), 0px 1px 2px 0px rgba(11,34,73,0.24);
+      --navy-elevation-2: 0px 2px 6px 2px rgba(11,34,73,0.12), 0px 1px 2px 0px rgba(11,34,73,0.24);
+      --navy-elevation-3: 0px 4px 8px 3px rgba(11,34,73,0.12), 0px 1px 3px 0px rgba(11,34,73,0.24);
+
+      --md-sys-color-primary: var(--navy-primary);
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-primary-container: var(--navy-container);
+      --md-sys-color-on-primary-container: var(--navy-on-surface);
+      --md-sys-color-surface: var(--navy-surface);
+      --md-sys-color-surface-variant: var(--navy-surface-variant);
+      --md-sys-color-on-surface: var(--navy-on-surface);
+      --md-sys-color-on-surface-variant: var(--navy-on-surface-variant);
+      --md-sys-color-outline: var(--navy-outline);
+      --md-sys-color-error: var(--navy-error);
+      --md-sys-elevation-1: var(--navy-elevation-1);
+      --md-sys-elevation-2: var(--navy-elevation-2);
+      --md-sys-elevation-3: var(--navy-elevation-3);
+      --card-bg: #FFFFFF;
+      --input-bg: #FFFFFF;
+      --result-card-bg: var(--navy-container);
+      --result-item-bg: rgba(255,255,255,0.7);
+      --app-bar-bg: var(--navy-primary);
+      --app-bar-color: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    .app-bar {
+      background: var(--app-bar-bg);
+      color: var(--app-bar-color);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--md-sys-elevation-2);
+    }
+
+    .app-bar-left { display: flex; align-items: center; gap: 16px; }
+    .app-icon { font-size: 32px; }
+    .app-title { font-size: 22px; font-weight: 500; letter-spacing: 0.5px; }
+
+    .content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--md-sys-elevation-1);
+      border: 1px solid var(--md-sys-color-surface-variant);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      color: var(--md-sys-color-primary);
+    }
+    .card-header h2 { font-size: 18px; font-weight: 500; color: var(--md-sys-color-on-surface); }
+    .card-header .material-icons { font-size: 24px; }
+
+    .week-selector {
+      margin-bottom: 0;
+    }
+    .week-selector label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .week-selector select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--md-sys-color-outline);
+      border-radius: 12px;
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface);
+      background: var(--input-bg);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .week-selector select:focus {
+      outline: none;
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 0 0 4px var(--md-sys-color-primary-container);
+    }
+
+    .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+    .day-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .day-row label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .day-row input {
+      width: 100%;
+      padding: 10px 4px;
+      border: 1.5px solid var(--md-sys-color-outline);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+      background: var(--input-bg);
+      transition: all 0.2s ease;
+    }
+    .day-row input:focus {
+      outline: none;
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 0 0 3px var(--md-sys-color-primary-container);
+    }
+    .day-row input.auto-filled {
+      background: #E8F5E9;
+      border-color: #4CAF50;
+    }
+    .day-row input.manual {
+      background: #FFF3E0;
+      border-color: #FF9800;
+    }
+
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed var(--md-sys-color-outline);
+    }
+    .sum-label { font-size: 15px; font-weight: 500; color: var(--md-sys-color-on-surface-variant); }
+    .sum-value { font-size: 20px; font-weight: 700; color: var(--md-sys-color-primary); }
+
+    .hours-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .input-group.required label::after {
+      content: '*';
+      color: var(--md-sys-color-error);
+      font-size: 16px;
+    }
+    .optional { font-size: 12px; color: var(--md-sys-color-outline); font-weight: 400; }
+    .input-group input {
+      padding: 14px 16px;
+      border: 1.5px solid var(--md-sys-color-outline);
+      border-radius: 12px;
+      font-size: 16px;
+      color: var(--md-sys-color-on-surface);
+      background: var(--input-bg);
+      transition: all 0.2s ease;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 0 0 4px var(--md-sys-color-primary-container);
+    }
+    .input-group input::placeholder { color: var(--md-sys-color-outline); }
+
+    .mdc-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 100px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Roboto', sans-serif;
+    }
+    .mdc-button--raised {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      box-shadow: var(--md-sys-elevation-2);
+    }
+    .mdc-button--raised:hover {
+      box-shadow: var(--md-sys-elevation-3);
+      transform: translateY(-1px);
+    }
+    .mdc-button--raised:active { transform: translateY(0); }
+    #calc-btn { align-self: center; margin-top: 8px; }
+
+    .results-card { background: var(--result-card-bg); border: none; }
+    .results-card .card-header { color: var(--md-sys-color-on-primary-container); }
+    .results-card .card-header h2 { color: var(--md-sys-color-on-primary-container); }
+
+    .results-grid { display: flex; flex-direction: column; gap: 14px; }
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--result-item-bg);
+      border-radius: 12px;
+    }
+    .result-item.highlight {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+      padding: 18px 16px;
+    }
+    .result-label { font-size: 14px; font-weight: 500; }
+    .result-value { font-size: 18px; font-weight: 700; }
+    .result-value.percentage { font-size: 28px; }
+
+    .hidden { display: none !important; }
+
+    .error-msg {
+      color: var(--md-sys-color-error);
+      font-size: 13px;
+      margin-top: 4px;
+      display: none;
+    }
+    .input-group.error input { border-color: var(--md-sys-color-error); }
+    .input-group.error .error-msg { display: block; }
+
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(11, 34, 73, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      color: white;
+    }
+    .loading-overlay.active { display: flex; }
+    .loading-overlay .material-icons {
+      font-size: 48px;
+      animation: spin 1s linear infinite;
+    }
+    .loading-overlay p {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .error-banner {
+      display: none;
+      background: #F9DEDC;
+      color: #B3261E;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .error-banner.active { display: block; }
+
+    .success-banner {
+      display: none;
+      background: #E8F5E9;
+      color: #2E7D32;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+    }
+    .success-banner.active { display: block; }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+    .legend-dot.auto { background: #E8F5E9; border: 1px solid #4CAF50; }
+    .legend-dot.manual { background: #FFF3E0; border: 1px solid #FF9800; }
+
+    @media (max-width: 600px) {
+      .days-grid { grid-template-columns: repeat(4, 1fr); }
+      .content { padding: 16px 12px; }
+      .app-title { font-size: 18px; }
+    }
+  </style>
+<base target="_blank">
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay active">
+    <span class="material-icons">refresh</span>
+    <p>Loading weeks data...</p>
+  </div>
+
+  <header class="app-bar">
+    <div class="app-bar-left">
+      <span class="material-icons app-icon">calculate</span>
+      <h1 class="app-title">ATOT Percentage Calculator</h1>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- Error Banner -->
+    <div id="error-banner" class="error-banner"></div>
+
+    <!-- Week Selector -->
+    <section class="card" id="week-section">
+      <div class="card-header">
+        <span class="material-icons">event</span>
+        <h2>Select Week</h2>
+      </div>
+      <div class="week-selector">
+        <label for="week-select">Choose a week (starting Monday)</label>
+        <select id="week-select" disabled>
+          <option value="">Loading weeks...</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Days Section -->
+    <section class="card" id="days-section">
+      <div class="card-header">
+        <span class="material-icons">calendar_today</span>
+        <h2>Days Numbers</h2>
+      </div>
+      <div class="days-grid">
+        <div class="day-row" data-day="mon"><label>mon</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+        <div class="day-row" data-day="tue"><label>tue</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+        <div class="day-row" data-day="wed"><label>wed</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+        <div class="day-row" data-day="thu"><label>thu</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+        <div class="day-row" data-day="fri"><label>fri</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+        <div class="day-row" data-day="sat"><label>sat</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+        <div class="day-row" data-day="sun"><label>sun</label><input type="number" class="day-input" placeholder="0" min="0" step="any"></div>
+      </div>
+      <div class="sum-row">
+        <span class="sum-label">Total Days</span>
+        <span id="days-sum" class="sum-value">0</span>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot auto"></div>
+          <span>Auto from Sheet</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot manual"></div>
+          <span>Manual Entry</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hours Section -->
+    <section class="card">
+      <div class="card-header">
+        <span class="material-icons">schedule</span>
+        <h2>Hours Input</h2>
+      </div>
+      <div class="hours-grid">
+        <div class="input-group required">
+          <label for="interact-hrs">MSL Interact. Hrs (Active)</label>
+          <input type="number" id="interact-hrs" placeholder="0.00" min="0" step="any">
+          <span class="error-msg">This field is required</span>
+        </div>
+        <div class="input-group required">
+          <label for="overhead-hrs">MSL Overhead Hrs (Active)</label>
+          <input type="number" id="overhead-hrs" placeholder="0.00" min="0" step="any">
+          <span class="error-msg">This field is required</span>
+        </div>
+        <div class="input-group">
+          <label for="loss-time">Loss Time <span class="optional">(Optional)</span></label>
+          <input type="number" id="loss-time" placeholder="0.00" min="0" step="any">
+        </div>
+      </div>
+    </section>
+
+    <!-- Calculate Button -->
+    <button id="calc-btn" class="mdc-button mdc-button--raised">
+      <span class="material-icons">percent</span>
+      Calculate Percentage
+    </button>
+
+    <!-- Results Section -->
+    <section id="results" class="card results-card hidden">
+      <div class="card-header">
+        <span class="material-icons">analytics</span>
+        <h2>Results</h2>
+      </div>
+      <div class="results-grid">
+        <div class="result-item">
+          <span class="result-label">Total Days &times; 8</span>
+          <span id="res-total-hours" class="result-value">0</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label">Sum of Hours</span>
+          <span id="res-sum-hours" class="result-value">0</span>
+        </div>
+        <div class="result-item highlight">
+          <span class="result-label">ATOT Percentage</span>
+          <span id="res-percentage" class="result-value percentage">0%</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function() {
+      /* ========== CONFIGURATION ========== */
+      // REPLACE THIS WITH YOUR ACTUAL WEB APP URL
+      const API_URL = 'https://script.google.com/macros/s/AKfycbxvhVx82bF9JfupQ2K-t2zwqOti14fjWfxiY-WecrUQuRNqjBHxkJ6Uy4X5FzU9PUKw/exec';
+
+      /* ========== DOM Elements ========== */
+      const loadingOverlay = document.getElementById('loading-overlay');
+      const errorBanner = document.getElementById('error-banner');
+      const weekSelect = document.getElementById('week-select');
+      const dayInputs = document.querySelectorAll('.day-input');
+
+      let weeksData = [];
+      let manualEdits = new Set();
+
+      /* ========== Helper Functions ========== */
+      function showError(msg) {
+        errorBanner.textContent = msg;
+        errorBanner.classList.add('active');
+        loadingOverlay.classList.remove('active');
+      }
+
+      function hideError() {
+        errorBanner.classList.remove('active');
+      }
+
+      /* ========== Auto Load on Page Open ========== */
+      async function loadWeeks() {
+        try {
+          const response = await fetch(API_URL + '?action=getWeeks');
+          const data = await response.json();
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          weeksData = data.weeks || [];
+
+          if (weeksData.length === 0) {
+            throw new Error('No complete weeks found in the sheet');
+          }
+
+          // Populate dropdown
+          weekSelect.innerHTML = '<option value="">-- Select Week --</option>';
+          weeksData.forEach((week, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = week.weekStart + ' to ' + week.weekEnd;
+            weekSelect.appendChild(option);
+          });
+
+          weekSelect.disabled = false;
+          loadingOverlay.classList.remove('active');
+          hideError();
+
+        } catch (err) {
+          showError('Failed to load weeks: ' + err.message);
+          weekSelect.innerHTML = '<option value="">Failed to load</option>';
+        }
+      }
+
+      // Load weeks immediately when page opens
+      loadWeeks();
+
+      /* ========== Week Selection ========== */
+      weekSelect.addEventListener('change', function() {
+        const weekIdx = parseInt(this.value);
+        if (isNaN(weekIdx) || !weeksData[weekIdx]) {
+          dayInputs.forEach(inp => {
+            inp.value = '';
+            inp.classList.remove('auto-filled', 'manual');
+          });
+          updateDaysSum();
+          return;
+        }
+
+        const week = weeksData[weekIdx];
+
+        dayInputs.forEach((inp, idx) => {
+          // Only update if this input was NOT manually edited
+          if (!manualEdits.has(inp)) {
+            inp.value = week.days[idx] || 0;
+            inp.classList.add('auto-filled');
+            inp.classList.remove('manual');
+          }
+        });
+
+        updateDaysSum();
+      });
+
+      /* ========== Track Manual Edits ========== */
+      dayInputs.forEach(inp => {
+        inp.addEventListener('input', function() {
+          manualEdits.add(this);
+          this.classList.remove('auto-filled');
+          this.classList.add('manual');
+          updateDaysSum();
+        });
+      });
+
+      /* ========== Calculator Logic ========== */
+      const daysSumEl = document.getElementById('days-sum');
+      const interactInput = document.getElementById('interact-hrs');
+      const overheadInput = document.getElementById('overhead-hrs');
+      const lossInput = document.getElementById('loss-time');
+      const calcBtn = document.getElementById('calc-btn');
+      const resultsCard = document.getElementById('results');
+      const resTotalHours = document.getElementById('res-total-hours');
+      const resSumHours = document.getElementById('res-sum-hours');
+      const resPercentage = document.getElementById('res-percentage');
+
+      function getDaysSum() {
+        let sum = 0;
+        dayInputs.forEach(inp => {
+          const val = parseFloat(inp.value);
+          if (!isNaN(val)) sum += val;
+        });
+        return sum;
+      }
+
+      function updateDaysSum() {
+        daysSumEl.textContent = getDaysSum().toLocaleString('en-US', { maximumFractionDigits: 2 });
+      }
+
+      function showInputError(el, show) {
+        const group = el.closest('.input-group');
+        if (show) group.classList.add('error');
+        else group.classList.remove('error');
+      }
+
+      function validate() {
+        let valid = true;
+        const interactVal = parseFloat(interactInput.value);
+        const overheadVal = parseFloat(overheadInput.value);
+
+        if (isNaN(interactVal) || interactInput.value.trim() === '') {
+          showInputError(interactInput, true);
+          valid = false;
+        } else {
+          showInputError(interactInput, false);
+        }
+
+        if (isNaN(overheadVal) || overheadInput.value.trim() === '') {
+          showInputError(overheadInput, true);
+          valid = false;
+        } else {
+          showInputError(overheadInput, false);
+        }
+
+        const daysSum = getDaysSum();
+        if (daysSum === 0) {
+          valid = false;
+          dayInputs.forEach(inp => inp.style.borderColor = 'var(--md-sys-color-error)');
+        } else {
+          dayInputs.forEach(inp => inp.style.borderColor = '');
+        }
+
+        return valid;
+      }
+
+      calcBtn.addEventListener('click', function() {
+        if (!validate()) {
+          resultsCard.classList.add('hidden');
+          return;
+        }
+
+        const daysSum = getDaysSum();
+        const totalHours = daysSum * 8;
+        const interact = parseFloat(interactInput.value) || 0;
+        const overhead = parseFloat(overheadInput.value) || 0;
+        const loss = parseFloat(lossInput.value) || 0;
+        const sumHours = interact + overhead + loss;
+
+        let percentage = 0;
+        if (totalHours > 0) {
+          percentage = (sumHours / totalHours) * 100;
+        }
+
+        resTotalHours.textContent = totalHours.toLocaleString('en-US', { maximumFractionDigits: 5 });
+        resSumHours.textContent = sumHours.toLocaleString('en-US', { maximumFractionDigits: 5 });
+        resPercentage.textContent = percentage.toFixed(2) + '%';
+
+        resultsCard.classList.remove('hidden');
+        resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+
+      [interactInput, overheadInput].forEach(el => {
+        el.addEventListener('input', () => showInputError(el, false));
+      });
+      dayInputs.forEach(el => {
+        el.addEventListener('input', () => { 
+          el.style.borderColor = ''; 
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
