@@ -287,25 +287,6 @@
     }
     .success-banner.active { display: block; }
 
-    .legend {
-      display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      font-size: 12px;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-    }
-    .legend-dot.auto { background: #E8F5E9; border: 1px solid #4CAF50; }
-    .legend-dot.manual { background: #FFF3E0; border: 1px solid #FF9800; }
-
     @media (max-width: 600px) {
       .days-grid { grid-template-columns: repeat(4, 1fr); }
       .content { padding: 16px 12px; }
@@ -358,16 +339,6 @@
       <div class="sum-row">
         <span class="sum-label">Total Days</span>
         <span id="days-sum" class="sum-value">0</span>
-      </div>
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-dot auto"></div>
-          <span>Auto from Sheet</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-dot manual"></div>
-          <span>Manual Entry</span>
-        </div>
       </div>
     </section>
 
